@@ -10,7 +10,7 @@ Como rodar:
 * Instalar [Yarn](https://yarnpkg.com/) - Página de [instalação](https://classic.yarnpkg.com/en/docs/install/);
 * Clonar repo;
 
-Instale as dependencias, se for a primeira vez que estiver executando, na `raiz do projeto`:
+Instale as dependências, se for a primeira vez que estiver executando, na `raiz do projeto`:
 ```
 yarn install
 ```
