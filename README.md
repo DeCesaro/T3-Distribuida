@@ -15,28 +15,8 @@ Instale as dependencias, se for a primeira vez que estiver executando, na `raiz 
 yarn install
 ```
 
-Para rodar o servidor, informe o ip do servidor:
+Para iniciar o host:
 
 ```
-yarn server 192.168.137.1
-```
-
-Em outro terminal, para rodar o cliente
-```
-yarn client
-```
-
-Para executar mais de um cliente você precisa especificar uma `porta` diferente e `ip`:
-```
-yarn client 8083 192.168.137.1
-```
-
-Para especificar o nome da pasta onde estão os arquivos do peer, utilize o último argumento (o default é `files`):
-```
-yarn client 8083 192.168.137.1 files2
-```
-
-Para especificar o IP do servidor, utilize o último argumento (em caso de estar em máquinas diferentes, o IP default é `localhost`):
-```
-yarn client 8083 192.168.137.1 files2 192.168.137.2
+yarn dev
 ```

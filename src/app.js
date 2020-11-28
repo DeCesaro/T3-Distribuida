@@ -75,23 +75,6 @@ async function showOptions() {
               console.log(colors.yellow, `informações: - ID: ${info.id} - HOST: ${info.host} - PORT: ${info.port} - CHANCE: ${info.chance}`);
             }
           })
-          
-          /* for(let index in data) {
-            if(index == configLine) {
-              hostData = data[index].replace('\r', '').split('\n');
-              const info = hostData[0].split('\n');
-
-              const id = info[0];
-              const host = info[1];
-              const port = info[2];
-              const chance = info[3];
-
-              if(info.length) {
-                console.log('info ', info);
-                console.log(`ID: ${info[0]} \n HOST: ${info[1]} \n PORT: ${info[2]} \n CHANCE: ${info[3]}`);
-              }
-            }
-          } */
         } catch (error){
           console.error(`❌ Falha ao ler o arquivo ${fileName}`, error);
         }
