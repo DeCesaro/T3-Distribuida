@@ -1,0 +1,24 @@
+{
+  "name": "distriuida-t3",
+  "version": "1.0.0",
+  "description": "Relógios",
+  "main": "./src/app.js",
+  "author": {
+    "name": "Bianca",
+    "email": "Bianca.Machado@edu.pucrs.br"
+  },
+  "license": "MIT",
+  "scripts": {
+    "start:": "yarn transpile & node ./dist/app",
+    "dev": "yarn transpile & node ./dist/app.js",
+    "transpile": "babel ./src --out-dir ./dist"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
+    "@babel/node": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
+    "body-parser": "^1.19.0",
+    "yarn-run-all": "^3.1.1"
+  }
+}
