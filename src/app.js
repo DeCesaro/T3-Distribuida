@@ -101,7 +101,6 @@ function sendMessageToNodes() {
         });
 
         var out = 's ' + receivingId + ' ' + clock
-        history += ' ' + out;
         console.log(out);
       }
       eventCount++;
