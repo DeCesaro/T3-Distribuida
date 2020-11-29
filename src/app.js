@@ -12,7 +12,7 @@ const os = require('os');
 const socket_server = dgram.createSocket({ type:'udp4', reuseAddr: true})
 var nodes = [];
 //pega o numero da linha do nodo que vamos inicializar
-const idNodo = args[0];
+const idNodo = 1;
 //relogio local
 var clock = 0;
 //contador de eventos que deve ser limitado em 100
