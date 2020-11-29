@@ -8,8 +8,58 @@ import readConfigFile from './utils/readConfigFile';
  *  dgram é o módulo para trabalhar com Datagram sockets em NodeJS - Para uso na comunicação entre clientes
  * */ 
 var dgram = require('dgram');
-var socket_server = dgram.createSocket('udp4');
+const os = require('os');
+const socket_server = dgram.createSocket({ type:'udp4', reuseAddr: true});
 /*** */
+/* ============================================================================== */
+const multicastAddress = '239.42.42.42';
+const multicastPort = 9001;
+
+socket_server.on('error', error => console.log(`Socket error: ${error}`));
+socket_server.on('listening', setupSocket);
+socket_server.on('message', handleMessage);
+
+socket_server.bind(multicastPort);
+
+
+function handleMessage(message, rInfo){
+	console.log(`Received ${message} from ${JSON.stringify(rInfo)}`);
+}
+
+function sendMessage(){
+	let message = JSON.stringify({ name: os.hostname() });
+	let data = Buffer.from(message);
+	socket_server.send(data, 0, data.length, multicastPort, multicastAddress, () => console.log(`Message sent.`));
+}
+
+function setupSocket(){
+	let interfaces = os.networkInterfaces();
+	
+	console.log(`Listening on ${JSON.stringify(socket_server.address())}`);
+	
+	socket_server.setMulticastLoopback(false);
+	
+	for(let interfaceName in interfaces){
+		console.log(`Adding memberships for interface ${interfaceName}`);
+		
+		//Loop through all addresses.
+		for(let interfaceAddress of interfaces[interfaceName]){
+			//Some network adapters (for example, that VirtualBox creates)
+			//cause EINVAL errors when adding multicast membership. 
+			try {
+				if(interfaceAddress.family == 'IPv4' && !interfaceAddress.internal){
+					socket_server.addMembership(multicastAddress, interfaceAddress.address);
+				}
+			}
+			catch(error) {
+				console.log(`Error adding socket membership: ${JSON.stringify(error)}`);
+			}
+		}
+	}
+  setInterval(sendMessage, 2000);
+}
+
+/* ================================================================================ */
 
 // Para ler do terminal as solicitações de arquivo
 const readline = require('readline');
