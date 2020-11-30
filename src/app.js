@@ -16,6 +16,7 @@ let socket_server = dgram.createSocket('udp4');
 
 let info;  // Nodo atual
 let eventCount = 0; // contador de eventos local, quando chegar em 100, deve parar
+let started = false;
 let hosts = [];
 let availableHosts = [];
 let lamportClock = 0;
@@ -117,17 +118,20 @@ socket_server.on('message', function(message, remote) {
   if (messageContent == 'ENTREI') {
     if(!availableHosts.includes(fromHost))
       availableHosts.push(fromHost);
+  } else {
+    const senderLamportClock = messageContent;
+    lamportClock = Number.parseInt(senderLamportClock) > Number.parseInt(lamportClock) ? parseInt(senderLamportClock) + 1 : parseInt(lamportClock) + 1;
+    console.log(colors.yellow,`id: ${info.id} - lamport: ${lamportClock} - r`);
   }
 
   if (availableHosts.length == hosts.length) {
-    clearInterval(setup);
-    console.log(colors.cyan, 'COMEÇOU!');
+    clearInterval(setup); // parar de fazer ping
+  
+    if (!started) console.log(colors.cyan, 'COMEÇOU!');
+    started = true;
+
     running = setInterval(startProcess, 60);
   }
-
-  const senderLamportClock = messageContent;
-  lamportClock = Number.parseInt(senderLamportClock) > Number.parseInt(lamportClock) ? parseInt(senderLamportClock) + 1 : parseInt(lamportClock) + 1;
-  console.log(colors.yellow,`id: ${info.id} - lamport: ${lamportClock} - r`);
 });
 
 function startProcess() {
