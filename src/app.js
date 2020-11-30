@@ -147,10 +147,6 @@ function startProcess() {
     console.log(colors.yellow,`id: ${info.id} - lamport: ${lamportClock} - l`);
   }
   else if (localOrSend === 2) { // evento externo
-    //falta formatar o restante da mensagem
-    //calcular um número aleatorio entre 0 ate length-1
-    //de acordo com o numero enviar para esse destino
-    //valorRelogio_
     const max = hosts.length - 1;
     const min = 0;
     let receivingNode = Math.floor(Math.random()*(max-min+1)+min);
