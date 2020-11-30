@@ -3,62 +3,18 @@
  * Trabalho 3 de Programação Distribuída
  */
 "use strict";
-import readConfigFile from './utils/readConfigFile';
 /**
  *  dgram é o módulo para trabalhar com Datagram sockets em NodeJS - Para uso na comunicação entre clientes
  * */ 
 var dgram = require('dgram');
-const os = require('os');
-const socket_server = dgram.createSocket({ type:'udp4', reuseAddr: true});
-/*** */
+let socket_server = dgram.createSocket('udp4');
 /* ============================================================================== */
-const multicastAddress = '239.42.42.42';
-const multicastPort = 9001;
 
-socket_server.on('error', error => console.log(`Socket error: ${error}`));
-socket_server.on('listening', setupSocket);
-socket_server.on('message', handleMessage);
-
-socket_server.bind(multicastPort);
-
-
-function handleMessage(message, rInfo){
-	console.log(`Received ${message} from ${JSON.stringify(rInfo)}`);
-}
-
-function sendMessage(){
-	let message = JSON.stringify({ name: os.hostname() });
-	let data = Buffer.from(message);
-	socket_server.send(data, 0, data.length, multicastPort, multicastAddress, () => console.log(`Message sent.`));
-}
-
-function setupSocket(){
-	let interfaces = os.networkInterfaces();
-	
-	console.log(`Listening on ${JSON.stringify(socket_server.address())}`);
-	
-	socket_server.setMulticastLoopback(false);
-	
-	for(let interfaceName in interfaces){
-		console.log(`Adding memberships for interface ${interfaceName}`);
-		
-		//Loop through all addresses.
-		for(let interfaceAddress of interfaces[interfaceName]){
-			//Some network adapters (for example, that VirtualBox creates)
-			//cause EINVAL errors when adding multicast membership. 
-			try {
-				if(interfaceAddress.family == 'IPv4' && !interfaceAddress.internal){
-					socket_server.addMembership(multicastAddress, interfaceAddress.address);
-				}
-			}
-			catch(error) {
-				console.log(`Error adding socket membership: ${JSON.stringify(error)}`);
-			}
-		}
-	}
-  setInterval(sendMessage, 2000);
-}
-
+/**
+ * Lista de hosts disponíveis no arquivo config.txt
+ */
+let hosts = [];
+let availableHosts = [];
 /* ================================================================================ */
 
 // Para ler do terminal as solicitações de arquivo
@@ -113,6 +69,7 @@ async function showOptions() {
           let info;
 
           data.forEach((content, index) => {
+            const hostsData = content.split(' ');
             if (index == configLine) {
               const lineData = content.split(' ');
               info = {
@@ -122,16 +79,60 @@ async function showOptions() {
                 chance: Number.parseFloat(lineData[3])
               };
 
+              socket_server.bind(info.port); // define a porta que o socket usa
+
               console.log(colors.yellow, `informações: - ID: ${info.id} - HOST: ${info.host} - PORT: ${info.port} - CHANCE: ${info.chance}`);
             }
+
+            hosts.push({
+              id: Number.parseInt(hostsData[0]),
+              host: hostsData[1],
+              port: Number.parseInt(hostsData[2]),
+              chance: Number.parseFloat(hostsData[3])
+            });
           })
+          console.log(hosts);
         } catch (error){
           console.error(`❌ Falha ao ler o arquivo ${fileName}`, error);
         }
       }
     }
-
-    showOptions();
   });
   console.log(colors.cyan, '\n\n*******************\n');
 }
+
+let setup;
+socket_server.on('listening', function() {
+	setup = setInterval(ping, 50);
+});
+
+socket_server.on('message', function(message, remote) {
+  let messageContent = message.toString('utf8').trim();
+
+  const fromHost = `${remote.address}:${remote.port}`;
+  if (messageContent == 'ENTREI') {
+    if(!availableHosts.includes(fromHost))
+      availableHosts.push(fromHost);
+  }
+
+  if (availableHosts.length == hosts.length) {
+    clearInterval(setup);
+    console.log('PODE COMEÇAR!');
+    // faz as coisas do programa;
+  }
+});
+
+function ping(){
+  for (let i = 0; i < hosts.length; i++) {
+      const { host, port } = hosts[i];
+      
+      let msg = Buffer.from("ENTREI");
+			socket_server.send(msg, port, host, function (err, bytes) {
+				console.log("Host indisponível");
+			});
+  }
+
+  setInterval(sendMessage, 2000);
+}
+
+function sendMessage(){}
