@@ -127,7 +127,7 @@ socket_server.on('message', function(message, remote) {
 
   const senderLamportClock = messageContent;
   lamportClock = Number.parseInt(senderLamportClock) > Number.parseInt(lamportClock) ? parseInt(senderLamportClock) + 1 : parseInt(lamportClock) + 1;
-  console.log(colors.cyan, 'Lamport clock ', lamportClock);
+  console.log(colors.yellow,`id: ${info.id} - lamport: ${lamportClock} - r`);
 });
 
 function startProcess() {
