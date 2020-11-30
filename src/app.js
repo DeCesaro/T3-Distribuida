@@ -122,6 +122,39 @@ socket_server.on('message', function(message, remote) {
   }
 });
 
+function startProcess() {
+  var localOrSend = Math.random();
+  if (localOrSend <= nodo.chance){
+      localOrSend = 2;
+  }else localOrSend = 1;
+
+  // Local event
+  if (localOrSend === 1) {
+    clock += clock+1;
+    var message = Date.now+''+nodo.id+''+clock+''+nodo.id;
+    console.log(message);
+  }
+  else if (localOrSend === 2) {
+    //falta formatar o restante da mensagem
+    //calcular um número aleatorio entre 0 ate length-1
+    //de acordo com o numero enviar para esse destino
+    //valorRelogio_
+    var receivingNode = nodes[randomInteger(0,nodes.length-1)];
+    var receivingId = receivingNode[0];
+    var receivingHost = receivingNode[1];
+    var receivingPort = receivingNode[2];
+
+    var syncMsg = new Buffer('s ' + id + ' ' + clock);
+    server.send(syncMsg, 0, syncMsg.length, receivingPort, receivingHost, function (err, bytes) {
+      if (err) throw err;
+    });
+
+    var out = 's ' + receivingId + ' ' + clock
+    console.log(out);
+  }
+  eventCount++;
+}
+
 function ping(){
   for (let i = 0; i < hosts.length; i++) {
       const { host, port } = hosts[i];
