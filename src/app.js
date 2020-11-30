@@ -127,7 +127,7 @@ socket_server.on('message', function(message, remote) {
   } else { // recebimento de mensagem
     const senderLamportClock = messageContent;
     // max(recebido, local) + 1
-    clock = Number.parseInt(senderLamportClock) > Number.parseInt(lamportClock) ? parseInt(senderLamportClock) + 1 : parseInt(lamportClock) + 1;
+    clock = Number.parseInt(senderLamportClock) > Number.parseInt(clock) ? parseInt(senderLamportClock) + 1 : parseInt(clock) + 1;
 
     // clock com id concatenado
     lamportClock = `${clock}${info.id}`;
