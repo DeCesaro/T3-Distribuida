@@ -38,8 +38,20 @@ icacls.exe .\host1.pem /grant:r "$($env:username):(r)"
 icacls.exe .\host1.pem /inheritance:r
 ```
 
+
+Linha 0 do arquivo config.txt:
+```
+ssh -i "host1.pem" ubuntu@ec2-100-26-168-95.compute-1.amazonaws.com
+```
+
+Linha 1 do arquivo config.txt:
 ```
 ssh -i "host1.pem" ubuntu@ec2-3-93-194-248.compute-1.amazonaws.com
+```
+
+Linha 2 do arquivo config.txt:
+```
+ssh -i "host1.pem" ubuntu@ec2-3-88-106-168.compute-1.amazonaws.com
 ```
 
 Testando a conexão com o _host1_:
