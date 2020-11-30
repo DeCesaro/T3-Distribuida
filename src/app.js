@@ -19,7 +19,13 @@ let eventCount = 0; // contador de eventos local, quando chegar em 100, deve par
 let started = false;
 let hosts = [];
 let availableHosts = [];
+
+// com o id concatenado
 let lamportClock = 0;
+
+// sem o id concatenado
+let clock = 0;
+
 let running; // para o intervalo
 /* ================================================================================ */
 
@@ -108,7 +114,7 @@ async function showOptions() {
 
 let setup;
 socket_server.on('listening', function() {
-	setup = setInterval(ping, 50);
+	setup = setInterval(ping, 60);
 });
 
 socket_server.on('message', function(message, remote) {
@@ -118,11 +124,21 @@ socket_server.on('message', function(message, remote) {
   if (messageContent == 'ENTREI') {
     if(!availableHosts.includes(fromHost))
       availableHosts.push(fromHost);
-  } else {
+  } else { // recebimento de mensagem
     const senderLamportClock = messageContent;
-    lamportClock = Number.parseInt(senderLamportClock) > Number.parseInt(lamportClock) ? parseInt(senderLamportClock) + 1 : parseInt(lamportClock) + 1;
-    console.log(colors.yellow,`id: ${info.id} - lamport: ${lamportClock} - r`);
+    // max(recebido, local) + 1
+    clock = Number.parseInt(senderLamportClock) > Number.parseInt(lamportClock) ? parseInt(senderLamportClock) + 1 : parseInt(lamportClock) + 1;
+
+    // clock com id concatenado
+    lamportClock = `${clock}${info.id}`;
+
+    const sender = hosts.find(host => host.address === remote.address);
+    const { id: senderID } = sender;
+
+    console.log(colors.yellow,`${Date.now()} - id: ${info.id} - relógio lógico: ${lamportClock} - r - remetente: ${senderID} - rel. recebido: ${senderLamportClock}`);
   }
+
+  if(!started) console.log("Aguardando os coleguinhas...");
 
   if (availableHosts.length == hosts.length) {
     clearInterval(setup); // parar de fazer ping
@@ -141,20 +157,23 @@ function startProcess() {
   else localOrSend = 1;
 
   if (localOrSend === 1) { // evento local
-    lamportClock += 1;
-    lamportClock = Number.parseInt(`${lamportClock}${info.id}`);
+    clock += 1;
+    lamportClock = Number.parseInt(`${clock}${info.id}`);
     
-    console.log(colors.yellow,`id: ${info.id} - lamport: ${lamportClock} - l`);
+    console.log(colors.yellow,`${Date.now()} - id: ${info.id} - relógio lógico: ${lamportClock} - l`);
   }
-  else if (localOrSend === 2) { // evento externo
+  else if (localOrSend === 2) { // evento externo = envio de mensagem
     const max = hosts.length - 1;
     const min = 0;
-    let receivingNode = Math.floor(Math.random()*(max-min+1)+min);
+    let receiverNode = Math.floor(Math.random()*(max-min+1) + min);
 
-    const { port, host } = hosts[receivingNode];
-    sendMessage(`${lamportClock}`, port, host); // envia o valor do relógio local
+    const { port, host, id: receiverID } = hosts[receiverNode];
+
+    clock += 1;
+    lamportClock = Number.parseInt(`${clock}${info.id}`);
+    sendMessage(`${clock}`, port, host); // envia o valor do relógio local
    
-    console.log(colors.yellow,`id: ${info.id} - lamport: ${lamportClock} - s - ${receivingNode}`);
+    console.log(colors.yellow,`${Date.now()} - id: ${info.id} - relógio lógico: ${lamportClock} - s - ${receiverID}`);
   }
   eventCount++;
 
@@ -171,11 +190,9 @@ function ping(){
       
       let msg = Buffer.from("ENTREI");
 			socket_server.send(msg, port, host, function (err, bytes) {
-				console.log("Host indisponível");
+				// console.log("Host indisponível");
 			});
   }
-
-  // setInterval(sendMessage, 2000);
 }
 
 function sendMessage(msg, port, host){
