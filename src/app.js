@@ -124,6 +124,10 @@ socket_server.on('message', function(message, remote) {
     console.log(colors.cyan, 'COMEÇOU!');
     running = setInterval(startProcess, 60);
   }
+
+  const senderLamportClock = messageContent;
+  lamportClock = Number.parseInt(senderLamportClock) > Number.parseInt(lamportClock) ? parseInt(senderLamportClock) + 1 : parseInt(lamportClock) + 1;
+  console.log(colors.cyan, 'Lamport clock ', lamportClock);
 });
 
 function startProcess() {
@@ -154,6 +158,7 @@ function startProcess() {
   }
   eventCount++;
 
+  console.log(colors.cyan, 'eventCount ', eventCount);
   if(eventCount === 100) {
     clearInterval(running);
     process.exit();
