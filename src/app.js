@@ -135,6 +135,8 @@ socket_server.on('message', function(message, remote) {
     const sender = hosts.find(host => host.host == remote.address);
     const { id: senderID } = sender;
 
+    eventCount++;
+    console.log(colors.cyan, 'Contador de eventos: ', eventCount);
     console.log(colors.yellow,`${Date.now()} - id: ${info.id} - relógio lógico: ${lamportClock} - r - remetente: ${senderID} - rel. recebido: ${senderLamportClock}`);
   }
 
@@ -177,7 +179,7 @@ function startProcess() {
   }
   eventCount++;
 
-  console.log(colors.cyan, 'eventCount ', eventCount);
+  console.log(colors.cyan, 'Contador de eventos: ', eventCount);
   if(eventCount === 100) {
     clearInterval(running);
     process.exit();
