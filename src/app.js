@@ -13,8 +13,13 @@ let socket_server = dgram.createSocket('udp4');
 /**
  * Lista de hosts disponíveis no arquivo config.txt
  */
+
+let info;  // Nodo atual
+let eventCount = 0; // contador de eventos local, quando chegar em 100, deve parar
 let hosts = [];
 let availableHosts = [];
+let lamportClock = 0;
+let running; // para o intervalo
 /* ================================================================================ */
 
 // Para ler do terminal as solicitações de arquivo
@@ -66,7 +71,6 @@ async function showOptions() {
           const dirname = `./src/${folderName}/`;
 
           let data = fs.readFileSync(`${dirname}${fileName}`, 'utf8').toString().split("\n");
-          let info;
 
           data.forEach((content, index) => {
             const hostsData = content.split(' ');
@@ -117,42 +121,43 @@ socket_server.on('message', function(message, remote) {
 
   if (availableHosts.length == hosts.length) {
     clearInterval(setup);
-    console.log('PODE COMEÇAR!');
-    // faz as coisas do programa;
+    console.log(colors.cyan, 'COMEÇOU!');
+    running = setInterval(startProcess, 60);
   }
 });
 
 function startProcess() {
   var localOrSend = Math.random();
-  if (localOrSend <= nodo.chance){
-      localOrSend = 2;
-  }else localOrSend = 1;
+  
+  if (localOrSend <= info.chance) localOrSend = 2;
+  else localOrSend = 1;
 
-  // Local event
-  if (localOrSend === 1) {
-    clock += clock+1;
-    var message = Date.now+''+nodo.id+''+clock+''+nodo.id;
-    console.log(message);
+  if (localOrSend === 1) { // evento local
+    lamportClock += 1;
+    lamportClock = Number.parseInt(`${lamportClock}${info.id}`);
+    
+    console.log(colors.yellow,`id: ${info.id} - lamport: ${lamportClock} - l`);
   }
-  else if (localOrSend === 2) {
+  else if (localOrSend === 2) { // evento externo
     //falta formatar o restante da mensagem
     //calcular um número aleatorio entre 0 ate length-1
     //de acordo com o numero enviar para esse destino
     //valorRelogio_
-    var receivingNode = nodes[randomInteger(0,nodes.length-1)];
-    var receivingId = receivingNode[0];
-    var receivingHost = receivingNode[1];
-    var receivingPort = receivingNode[2];
+    const max = hosts.length - 1;
+    const min = 0;
+    let receivingNode = Math.floor(Math.random()*(max-min+1)+min);
 
-    var syncMsg = new Buffer('s ' + id + ' ' + clock);
-    server.send(syncMsg, 0, syncMsg.length, receivingPort, receivingHost, function (err, bytes) {
-      if (err) throw err;
-    });
-
-    var out = 's ' + receivingId + ' ' + clock
-    console.log(out);
+    const { port, port} = hosts[receivingNode];
+    sendMessage(`${lamportClock}`, port, port); // envia o valor do relógio local
+   
+    console.log(colors.yellow,`id: ${info.id} - lamport: ${lamportClock} - s - ${receivingNode}`);
   }
   eventCount++;
+
+  if(eventCount === 100) {
+    clearInterval(running);
+    process.exit();
+  }
 }
 
 function ping(){
@@ -165,7 +170,11 @@ function ping(){
 			});
   }
 
-  setInterval(sendMessage, 2000);
+  // setInterval(sendMessage, 2000);
 }
 
-function sendMessage(){}
+function sendMessage(msg, port, host){
+  socket_server.send(msg, port, host, function (err, bytes) {
+    console.log("Host indisponível");
+  });
+}
