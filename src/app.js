@@ -133,6 +133,7 @@ socket_server.on('message', function(message, remote) {
     lamportClock = `${clock}${info.id}`;
 
     const sender = hosts.find(host => host.address === remote.address);
+    console.log('remote.address ', remote.address);
     const { id: senderID } = sender;
 
     console.log(colors.yellow,`${Date.now()} - id: ${info.id} - relógio lógico: ${lamportClock} - r - remetente: ${senderID} - rel. recebido: ${senderLamportClock}`);
