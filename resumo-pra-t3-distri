@@ -1,6 +1,0 @@
-- problema: cada máquina precisa saber o tempo para tomar decisões;
-
-- precisa ter uma referência local de tempo;
-
-- Como sincronizar os relógios?
-
