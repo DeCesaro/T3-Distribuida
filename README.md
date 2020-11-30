@@ -47,3 +47,34 @@ Testando a conexão com o _host1_:
 ```
 ping ec2-3-93-194-248.compute-1.amazonaws.com
 ```
+
+### Configurando o ambiente da EC2:
+
+nodejs
+```
+sudo apt install nodejs
+```
+
+yarn
+```
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+```
+```
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn deb https://dl.yarnpkg.com/debian/ stable main
+```
+```
+sudo apt update && sudo apt install yarn
+```
+
+clone repo:
+```
+git clone https://github.com/DeCesaro/T3-Distribuida.git
+```
+```
+cd T3-Distribuida
+```
+```
+yarn install
+```
+
+
