@@ -147,8 +147,8 @@ function startProcess() {
     const min = 0;
     let receivingNode = Math.floor(Math.random()*(max-min+1)+min);
 
-    const { port, port} = hosts[receivingNode];
-    sendMessage(`${lamportClock}`, port, port); // envia o valor do relógio local
+    const { port, host } = hosts[receivingNode];
+    sendMessage(`${lamportClock}`, port, host); // envia o valor do relógio local
    
     console.log(colors.yellow,`id: ${info.id} - lamport: ${lamportClock} - s - ${receivingNode}`);
   }
