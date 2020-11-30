@@ -133,7 +133,6 @@ socket_server.on('message', function(message, remote) {
     lamportClock = `${clock}${info.id}`;
 
     const sender = hosts.find(host => host.host == remote.address);
-    // console.log('sender ', sender);
     const { id: senderID } = sender;
 
     console.log(colors.yellow,`${Date.now()} - id: ${info.id} - relógio lógico: ${lamportClock} - r - remetente: ${senderID} - rel. recebido: ${senderLamportClock}`);
@@ -198,6 +197,6 @@ function ping(){
 
 function sendMessage(msg, port, host){
   socket_server.send(msg, port, host, function (err, bytes) {
-    console.log("Host indisponível");
+    // console.log("Host indisponível");
   });
 }
