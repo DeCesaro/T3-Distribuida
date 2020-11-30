@@ -54,6 +54,16 @@ Linha 2 do arquivo config.txt:
 ssh -i "host1.pem" ubuntu@ec2-3-88-106-168.compute-1.amazonaws.com
 ```
 
+Linha 3 do arquivo config.txt:
+```
+ssh -i "host1.pem" ubuntu@ec2-3-84-162-91.compute-1.amazonaws.com
+```
+
+Linha 4 do arquivo config.txt:
+```
+ssh -i "host1.pem" ubuntu@ec2-54-221-13-251.compute-1.amazonaws.com
+```
+
 Testando a conexão com o _host1_:
 
 ```
