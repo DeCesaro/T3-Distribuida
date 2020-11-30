@@ -180,7 +180,7 @@ function startProcess() {
   eventCount++;
 
   console.log(colors.cyan, 'Contador de eventos: ', eventCount);
-  if(eventCount === 100) {
+  if(eventCount >= 100) {
     clearInterval(running);
     process.exit();
   }
